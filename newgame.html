@@ -1,0 +1,350 @@
+<html>
+	<head>
+		<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0' name='viewport' />
+		<meta name="viewport" content="width=device-width" />
+		<script src="logic.js"></script>
+		<script src="world.js"></script>
+		<title></title>
+		<style>
+			#game{
+				width:calc(100% - 8px);
+				max-width:500px;
+				height:calc(100% - 8px);
+				max-height:750px;
+				margin:auto;
+				border: 1px solid black;
+				font-size:12px;		
+			}
+			#screen, #superSecretBonusStats, #battle, #menu, #loot, #Inventory{
+				width:calc(100% - 14px);
+				height:calc(65% - 14px);
+				margin:5px;
+				padding:1px;
+				border: 1px solid black;
+			}
+			#Inventory{				
+				overflow: scroll;
+			}
+			#Inventory table, #Inventory td {
+				border: black 1px solid;
+				margin: 0px;
+				padding: 2px;
+				width:calc(100% - 4px);
+			}
+			#Inventory>table>tbody>tr>td{
+				font-size:12px;
+			}
+			#Inventory>table>tbody>tr:nth-child(1)>td{
+				font-size:10px;
+			}
+			.block{
+				width:calc(12.5% - 2px);
+				height:calc(12.5% - 2px);
+				margin:0px;
+				float:left;
+				border: 1px solid black;
+				overflow:hidden;
+			}
+			#battle-title{
+				width:calc(100% - 14px);
+				height:calc(20% - 14px); 
+				margin: 1px;
+				border: 1px solid black;
+				float: right;
+				padding:5px;
+			}
+			.battle-block{
+				width:calc(50% - 14px);
+				height:calc(80% - 14px); 
+				margin: 1px;
+				border: 1px solid black;
+				float: right;
+				padding:5px;
+			}
+			#characterInfo{
+				width: calc(100% - 12px);	
+				height:calc(5% - 12px);
+				border: 1px solid black;
+				margin:5px;
+				height: 20px;
+			}
+			tr.uncommon, h3.uncommon, ul.uncommon{
+				color: rgb(66, 66, 170);
+				background-color: rgb(239, 251, 255);
+			}
+			tr.rare, h3.rare, ul.rare{
+				color: rgb(195, 196, 4);
+				background-color: rgb(255, 255, 163);
+			}
+			tr.legendary, h3.legendary, ul.legendary{
+				color: darkorange;
+				background-color: rgb(255, 225, 161);
+			}
+			#healthText{
+				float: left;
+				border: 1px solid black;
+				height: 16px;
+				margin: 1px;
+				width: calc(50% - 4px);
+				font-size: 90%;
+			}
+			#healthBarContaniner{
+				float: left;
+				border: 1px solid black;
+				height: 16px;
+				margin: 1px;
+				width: calc(50% - 4px);
+			}
+			#healthBar{
+				float: left;
+				background: green;
+				height: 16px;
+				width: 100%;
+			}
+			#controls, #controls2, #controls3, #invintoryControls, #lootControls{
+				width:calc(100% - 12px);
+				height:calc(30% - 12px);
+				margin:5px;
+				border: 1px solid black;
+			}
+			#controls button, #controls2 button, #controls3 button, #invintoryControls button, #lootControls button{
+				width:calc(33% - 2px);
+				height:calc(33% - 2px);
+				margin:.2%;
+				float: left;
+			}
+			h1{
+				margin:0px;
+			}
+			.block>h1{
+				position: absolute;
+				z-index: 1;
+				font-size:140%;
+			}
+			.block>img{
+				width:300%; 
+				max-height:100%;
+				overflow:hidden;
+				position: relative;
+			}
+			.mount>img{
+				left:-200%;
+			}
+			.grass>img{
+				left:-100%;
+			}
+			.dirt1>img{
+				left:0;
+			}
+			.hide{
+				display: none;
+			}
+			@media handheld{
+				#game{
+					font-size: 4vw;				
+				}
+				#Inventory>table>tbody>tr>td{
+					font-size: 4vw;
+				}
+				#Inventory>table>tbody>tr:nth-child(1)>td{
+					font-size: 3.5vw;
+				}
+				#healthText{
+					font-size: 3vw;
+				}				
+				.block>h1{
+					font-size: 5vw;
+				}
+				.viewPortFontButton{
+					font-size: 50%;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div id="game">
+			<div class="hide" id="battle">
+				<div id="battle-title">Battle</div>
+				<div id="enemy" class="battle-block">
+					<div id="enemy-name"></div>
+					<div id="enemy-level"></div>
+					<div id="enemy-hp"></div>
+				</div>
+				<div id="self" class="battle-block">
+					<div id="self-title"></div>
+					<div id="self-level"></div>
+					<div id="self-exp"></div>
+					<div id="gold"></div>
+					<div id="self-hp"></div>
+					<div id="self-str"></div>
+					<div id="self-spe"></div>
+					<div id="self-armor"></div>
+				</div>
+			</div>
+			<div id="menu" class="hide">
+				<div id="menu-self-title"></div>
+				<div id="menu-self-level"></div>
+				<div id="menu-self-exp"></div>
+				<div id="menu-gold"></div>
+				<div id="menu-self-hp"></div>
+				<div id="menu-self-str"></div>
+				<div id="menu-self-spe"></div>
+				<div id="menu-self-armor"></div>
+			</div>
+			<div id="Inventory" class="hide">
+				<button onclick="hideInventory()">Exit</button>
+			</div>
+			<div id="loot" class="hide">
+				<div id="itemLoot">
+				</div>
+				<div id="goldLoot">
+				</div>
+				<button onclick="showWorld()">Exit</button>
+			</div>
+			<div id="screen">
+				<div class="block" id="11"><img src="rpg-sprite.png"></div>
+				<div class="block" id="12"><img src="rpg-sprite.png"></div>
+				<div class="block" id="13"><img src="rpg-sprite.png"></div>
+				<div class="block" id="14"><img src="rpg-sprite.png"></div>
+				<div class="block" id="15"><img src="rpg-sprite.png"></div>
+				<div class="block" id="16"><img src="rpg-sprite.png"></div>
+				<div class="block" id="17"><img src="rpg-sprite.png"></div>
+				<div class="block" id="18"><img src="rpg-sprite.png"></div>
+				<div class="block" id="21"><img src="rpg-sprite.png"></div>
+				<div class="block" id="22"><img src="rpg-sprite.png"></div>
+				<div class="block" id="23"><h1>x</h1><img src="rpg-sprite.png"></div>
+				<div class="block" id="24"><img src="rpg-sprite.png"></div>
+				<div class="block" id="25"><img src="rpg-sprite.png"></div>
+				<div class="block" id="26"><img src="rpg-sprite.png"></div>
+				<div class="block" id="27"><img src="rpg-sprite.png"></div>
+				<div class="block" id="28"><img src="rpg-sprite.png"></div>
+				<div class="block" id="31"><img src="rpg-sprite.png"></div>
+				<div class="block" id="32"><img src="rpg-sprite.png"></div>
+				<div class="block" id="33"><img src="rpg-sprite.png"></div>
+				<div class="block" id="34"><img src="rpg-sprite.png"></div>
+				<div class="block" id="35"><img src="rpg-sprite.png"></div>
+				<div class="block" id="36"><img src="rpg-sprite.png"></div>
+				<div class="block" id="37"><img src="rpg-sprite.png"></div>
+				<div class="block" id="38"><img src="rpg-sprite.png"></div>
+				<div class="block" id="41"><img src="rpg-sprite.png"></div>
+				<div class="block" id="42"><img src="rpg-sprite.png"></div>
+				<div class="block" id="43"><img src="rpg-sprite.png"></div>
+				<div class="block" id="44"><img src="rpg-sprite.png"></div>
+				<div class="block" id="45"><img src="rpg-sprite.png"></div>
+				<div class="block" id="46"><img src="rpg-sprite.png"></div>
+				<div class="block" id="47"><img src="rpg-sprite.png"></div>
+				<div class="block" id="48"><img src="rpg-sprite.png"></div>
+				<div class="block" id="51"><img src="rpg-sprite.png"></div>
+				<div class="block" id="52"><img src="rpg-sprite.png"></div>
+				<div class="block" id="53"><img src="rpg-sprite.png"></div>
+				<div class="block" id="54"><img src="rpg-sprite.png"></div>
+				<div class="block" id="55"><img src="rpg-sprite.png"></div>
+				<div class="block" id="56"><img src="rpg-sprite.png"></div>
+				<div class="block" id="57"><img src="rpg-sprite.png"></div>
+				<div class="block" id="58"><img src="rpg-sprite.png"></div>
+				<div class="block" id="61"><img src="rpg-sprite.png"></div>
+				<div class="block" id="62"><img src="rpg-sprite.png"></div>
+				<div class="block" id="63"><img src="rpg-sprite.png"></div>
+				<div class="block" id="64"><img src="rpg-sprite.png"></div>
+				<div class="block" id="65"><img src="rpg-sprite.png"></div>
+				<div class="block" id="66"><img src="rpg-sprite.png"></div>
+				<div class="block" id="67"><img src="rpg-sprite.png"></div>
+				<div class="block" id="68"><img src="rpg-sprite.png"></div>
+				<div class="block" id="71"><img src="rpg-sprite.png"></div>
+				<div class="block" id="72"><img src="rpg-sprite.png"></div>
+				<div class="block" id="73"><img src="rpg-sprite.png"></div>
+				<div class="block" id="74"><img src="rpg-sprite.png"></div>
+				<div class="block" id="75"><img src="rpg-sprite.png"></div>
+				<div class="block" id="76"><img src="rpg-sprite.png"></div>
+				<div class="block" id="77"><img src="rpg-sprite.png"></div>
+				<div class="block" id="78"><img src="rpg-sprite.png"></div>
+				<div class="block" id="81"><img src="rpg-sprite.png"></div>
+				<div class="block" id="82"><img src="rpg-sprite.png"></div>
+				<div class="block" id="83"><img src="rpg-sprite.png"></div>
+				<div class="block" id="84"><img src="rpg-sprite.png"></div>
+				<div class="block" id="85"><img src="rpg-sprite.png"></div>
+				<div class="block" id="86"><img src="rpg-sprite.png"></div>
+				<div class="block" id="87"><img src="rpg-sprite.png"></div>
+				<div class="block" id="88"><img src="rpg-sprite.png"></div>
+			</div>
+			<div id="characterInfo">
+				<div id="healthText">
+				15/30
+				</div>
+				<div id="healthBarContaniner">
+					<div id="healthBar">					
+					</div>
+				</div>
+			</div>
+			<div id="controls">
+				<button type="button" onclick="menu()">Menu</button>
+				<button type="button" onclick="up()">UP</button>
+				<button type="button" onclick="saveGame()">Save Game</button>
+
+				<button type="button" onclick="left()">LEFT</button>
+				<button type="button" onclick="">Enter</button>
+				<button type="button" onclick="right()">RIGHT</button>
+
+				<button type="button" onclick="heal()">Heal</button>
+				<button type="button" onclick="down()">DOWN</button>
+				<button type="button" onclick="">Blank</button>
+			</div>
+			<div id="controls2" class="hide">
+				<button type="button" onclick="run()">Run</button>
+				<button type="button" onclick="">Blank</button>
+				<button type="button" onclick="attack()">Attack</button>
+
+				<button type="button" onclick="">Blank</button>
+				<button type="button" onclick="attack()">Attack</button>
+				<button type="button" onclick="">Blank</button>
+
+				<button type="button" onclick="">Blank</button>
+				<button type="button" onclick="">Blank</button>
+				<button type="button" onclick="">Blank</button>
+			</div>
+			<div id="controls3" class="hide">
+				<button type="button" onclick="exit()">Exit</button>
+				<button type="button" onclick="up()">UP</button>
+				<button type="button" onclick="showInventory()">Inventory</button>
+
+				<button type="button" onclick="left()">LEFT</button>
+				<button type="button" onclick="">Enter</button>
+				<button type="button" onclick="right()">RIGHT</button>
+
+				<button type="button" onclick="newGame()">New Game</button>
+				<button type="button" onclick="down()">DOWN</button>
+				<button type="button" onclick="setName()">Set Name</button>
+			</div>
+			<div id="invintoryControls" class="hide">
+				<button type="button" onclick="hideInventory()">Exit</button>
+				<button class="viewPortFontButton" type="button" onclick="sellUnequipped()">Sell Unequipped</button>
+				<button type="button" onclick="">Blank</button>
+
+				<button class="viewPortFontButton" type="button" onclick="sellUnequipped('normal')">Sell Unequipped Normal</button>
+				<button class="viewPortFontButton" type="button" onclick="sellUnequipped('uncommon')">Sell Unequipped Uncommon</button>
+				<button class="viewPortFontButton" type="button" onclick="sellUnequipped('rare')">Sell Unequipped Rare</button>
+
+				<button type="button" onclick="loot()">Blank</button>
+				<button type="button" onclick="">Blank</button>
+				<button type="button" onclick="">Blank</button>
+			</div>
+			<div id="lootControls" class="hide">
+				<button type="button" onclick="showWorld()">Exit</button>
+				<button type="button" onclick="sellItem()">Sell</button>
+				<button type="button" onclick="showInventory()">Inventory</button>
+
+				<button type="button" onclick="">Blank</button>
+				<button type="button" onclick="">Blank</button>
+				<button type="button" onclick="">Blank</button>
+
+				<button type="button" onclick="loot()">Blank</button>
+				<button type="button" onclick="">Blank</button>
+				<button type="button" onclick="attack()">Blank</button>
+			</div>
+		</div>
+			<script>
+				renderWorld(0,0);
+				checkSave();
+			</script>
+	</body>
+</html>
