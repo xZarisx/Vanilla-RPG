@@ -1,5 +1,7 @@
+//sets the default starting location
 var currentWorldSectionX = 0;
 var currentWorldSectionY = 0;
+//really this renders the current screen
 function renderWorld(x,y){
     var nextWorldIndex = 0;
     for(i = 11;i < 88; i += 10){
@@ -9,7 +11,7 @@ function renderWorld(x,y){
         }
     }
 }
-
+//this determines what which tile the player is on
 var lastLocation = 23;
 
 var enemylevel = 1;
@@ -28,7 +30,7 @@ var goldLoot = 0;
 var selfItems = {items:[
 ]};
 var itemsEquipped = {"head":"","body":"","hand":"","legs":"","feet":"","shield":"","ring":"","neck":""};
-
+// these store the total bonus from equipped items
 var selfBonusStr = 0;
 var selfBonusSpeed = 0;
 var selfBonusArmor = 0;
@@ -38,6 +40,7 @@ function setName(){
     selftitle = prompt("Please enter your name","");
 }
 
+//detect key strokes for PC users
 document.onkeydown = checkKey;
 function checkKey(e) {
     e = e || window.event;
@@ -58,6 +61,7 @@ function checkKey(e) {
     }
 }
 
+//checks to see if there is anything in localStorage and if there is set all vars
 function checkSave(){
     if (localStorage.getItem("selftitle") != null){
         selftitle = localStorage.getItem("selftitle");
@@ -135,6 +139,7 @@ function newGame(){
 	}
 }
 
+//makes the displayed HTML reflect the vars
 function setSelf(){
 	calcBonus();
     document.getElementById("menu-self-title").innerHTML = "Name: " + selftitle;
@@ -159,6 +164,7 @@ function setSelf(){
     document.getElementById("self-armor").innerHTML = "ARMOR: " + (selfarmor + selfBonusArmor) + "(" + selfBonusArmor + ")";
 }
 
+//need to make this not run when not in combat
 function attack(){
     enemyhp -= Math.floor(100 / (100 + enemylevel * 4 - (selfspeed + selfBonusSpeed)) * (selfstr + selfBonusStr));
     document.getElementById("enemy-hp").innerHTML = "HP: " + enemyhp; 
@@ -184,7 +190,7 @@ function attack(){
     }
 }
 
-
+//hides the views and controls. Used when transitioning screens
 function hideViews(){
 	var gameChildrenLength = document.getElementById("game").childNodes.length - 1;
 	for(i = gameChildrenLength; i >= 0; i--){
@@ -193,7 +199,7 @@ function hideViews(){
 	document.getElementById('characterInfo').className = "";
 }
 
-
+//Just a big list of all the possible loot
 var lootTable = {loot:[
 {rarity:[
 {"itemName":"Long Sword","type":"hand","rarity":"normal","ability":"",
@@ -424,6 +430,8 @@ var lootTable = {loot:[
 	selfBonusHp:[{"low":"5","high":"6"}]},
 ]},
 ]};
+
+//generates loot saves it into selfItems
 function loot(){
 	var rarityArrayIndex = 0;
 	var raritySetter = Math.floor(Math.round((Math.random() * 100) * 100) / 100);
@@ -467,6 +475,8 @@ function loot(){
 		text += "</ul><button onclick='equip(" + (selfItems.items.length - 1) + ",0)'>Equip</button>";
 		document.getElementById("itemLoot").innerHTML = text;
 }
+
+//generates random stats for item being created. The high and low are based off the high and low from the lootTable
 function randomStats(high, low){
 	y = parseFloat(high);	
 	z = parseFloat(low);
@@ -497,7 +507,9 @@ function heal(){
     document.getElementById("healthText").innerHTML = "HP: " + selfcurrenthp + "/" + (selfhp + selfBonusHp) + "(" + selfBonusHp + ")";
 	document.getElementById("healthBar").style.width = (selfcurrenthp / (selfhp + selfBonusHp) * 100).toString() + "%";
 }
+//needed for display purposes
 var itemTypes = ["head","body","hand","legs","feet","shield","ring","neck"];
+//Need to find a better way to do this. It gets really slow when there is a lot of items
 function showInventory() {
 	hideViews();
     document.getElementById("Inventory").className = "";
@@ -588,6 +600,7 @@ function sellUnequipped(rarity){
 	}
 	showInventory();
 }
+//sets an item as equipped
 function equip(itemIndex, isEquipped){
 	if(isEquipped == 1){
 		selfItems.items[itemIndex].equipped = false;
@@ -605,7 +618,9 @@ function equip(itemIndex, isEquipped){
 	calcBonus();
 	setSelf();
 }
+//I would like to figure out a way to have multiple rings equipped
 var itemsEquippedArray = [];
+//calculates stat bonus based on items equipped
 function calcBonus(){
 	if(itemsEquipped == null){
 		itemsEquipped = {"head":"","body":"","hand":"","legs":"","feet":"","shield":"","ring":"","neck":""};
@@ -624,6 +639,8 @@ function calcBonus(){
 		}
 	}
 }
+
+//Need to figure out a better way to do the following functions they are very similar
 function hideInventory(){
 	hideViews();
     document.getElementById("menu").className = "";
@@ -650,9 +667,11 @@ function menu(){
     document.getElementById("controls3").className = "";
 }
 
+// vars for calculating level
 var factor = 4.5;
 var log = Math.log(150);
 
+//Calculates the amount of exp and gold gained per fight also sets stats based on level
 function expCal(){
     selflevel = Math.floor(Math.pow(Math.log(selfexp) / log,factor)) + 1;
     selfstr = selflevel * 3;
@@ -664,6 +683,7 @@ function expCal(){
     saveGame();
 }
 
+//determins if there is going to be a fight and generates the fight
 function randomEvent(){
     var randomMizer = Math.floor((Math.random()*10)+1);
     if(document.getElementById(lastLocation).classList.contains("grass") &&  randomMizer == 1){
@@ -677,6 +697,8 @@ function randomEvent(){
         document.getElementById("enemy-level").innerHTML = "LEVEL: " + enemylevel;     
     }
 }
+
+//Controls: for moving the player
 function up(){
     if(document.getElementById(lastLocation - 10) && document.getElementById(lastLocation - 10).classList.contains("mount")) {
         return;
