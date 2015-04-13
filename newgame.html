@@ -4,6 +4,7 @@
 		<meta name="viewport" content="width=device-width" />
 		<script src="logic.js"></script>
 		<script src="world.js"></script>
+		<script src="lootTable.js"></script>
 		<title></title>
 		<style>
 			#game{
@@ -25,16 +26,16 @@
 			#Inventory{				
 				overflow: scroll;
 			}
-			#Inventory table, #Inventory td {
+			#Inventory table, #Inventory td, #itemLoot table, #itemLoot td{
 				border: black 1px solid;
 				margin: 0px;
 				padding: 2px;
 				width:calc(100% - 4px);
 			}
-			#Inventory>table>tbody>tr>td{
+			#Inventory>table>tbody>tr>td, #itemLoot>table>tbody>tr>td{
 				font-size:12px;
 			}
-			#Inventory>table>tbody>tr:nth-child(1)>td{
+			#Inventory>table>tbody>tr:nth-child(1)>td, #itemLoot>table>tbody>tr:nth-child(1)>td{
 				font-size:10px;
 			}
 			.block{
@@ -143,10 +144,10 @@
 				#game{
 					font-size: 4vw;				
 				}
-				#Inventory>table>tbody>tr>td{
+				#Inventory>table>tbody>tr>td, #itemLoot>table>tbody>tr>td{
 					font-size: 4vw;
 				}
-				#Inventory>table>tbody>tr:nth-child(1)>td{
+				#Inventory>table>tbody>tr:nth-child(1)>td, #itemLoot>table>tbody>tr:nth-child(1)>td{
 					font-size: 3.5vw;
 				}
 				#healthText{
@@ -199,7 +200,6 @@
 				</div>
 				<div id="goldLoot">
 				</div>
-				<button onclick="showWorld()">Exit</button>
 			</div>
 			<div id="screen">
 				<div class="block" id="11"><img src="rpg-sprite.png"></div>
@@ -330,12 +330,12 @@
 			</div>
 			<div id="lootControls" class="hide">
 				<button type="button" onclick="showWorld()">Exit</button>
-				<button type="button" onclick="sellItem()">Sell</button>
+				<button type="button" onclick="sellItem()">Sell New</button>
 				<button type="button" onclick="showInventory()">Inventory</button>
 
 				<button type="button" onclick="">Blank</button>
 				<button type="button" onclick="">Blank</button>
-				<button type="button" onclick="">Blank</button>
+				<button type="button" onclick="equip(selfItems.items.length - 1, 0)">Equip New</button>
 
 				<button type="button" onclick="loot()">Blank</button>
 				<button type="button" onclick="">Blank</button>
